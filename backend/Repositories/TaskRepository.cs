@@ -9,10 +9,9 @@ namespace backend.Repositories
     public class TaskRepository : ITaskRepository
     {
         private readonly IMongoCollection<TaskModel> _taskCollection;
-        public TaskRepository(IOptions<MongoDbSettings> mongoDbSettings)
+        public TaskRepository(IOptions<MongoDbSettings> mongoDbSettings, IMongoClient mongoClient)
         {
-            var client = new MongoClient(mongoDbSettings.Value.ConnectionString);
-            var database = client.GetDatabase(mongoDbSettings.Value.DatabaseName);
+            var database = mongoClient.GetDatabase(mongoDbSettings.Value.DatabaseName);
             _taskCollection = database.GetCollection<TaskModel>(mongoDbSettings.Value.TasksCollectionName);
         }
 
