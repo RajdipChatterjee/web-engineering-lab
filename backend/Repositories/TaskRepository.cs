@@ -17,12 +17,18 @@ namespace backend.Repositories
 
         public async Task CreateTaskAsync(TaskModel task)
         {
-            throw new NotImplementedException();
+            await _taskCollection.InsertOneAsync(task);
         }
 
         public async Task DeleteTaskAsync(string taskId)
         {
-            throw new NotImplementedException();
+            var filter = Builders<TaskModel>.Filter.And(
+                Builders<TaskModel>.Filter.Eq(t => t.TaskId, taskId),
+                Builders<TaskModel>.Filter.Eq(t => t.DeletedAt, null)
+            );
+            var update = Builders<TaskModel>.Update.Set(t => t.DeletedAt, DateTime.UtcNow);
+            var result = await _taskCollection.UpdateOneAsync(filter, update);
+            if (result.MatchedCount == 0) throw new Exception("Task not found or already deleted.");
         }
 
         public async Task<List<TaskModel>> GetAllTasksAsync()
