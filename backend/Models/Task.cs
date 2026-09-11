@@ -1,39 +1,39 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel;
+using backend.Interfaces;
 
 namespace backend.Models
 {
     [BsonIgnoreExtraElements]
-    public class Task
+    public class Task : PracticeRecord<string>
     {
-        [BsonId, BsonRepresentation(BsonType.ObjectId)]
-        public string TaskId { get; set; } = null!;
         [BsonElement("projectId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProjectId { get; set; } = null!;
         [BsonElement("title")]
         public string Title { get; set; } = null!;
-        [BsonElement("description"), BsonIgnoreIfNull]
+        [BsonElement("description")]
+        [BsonIgnoreIfNull]
         public string? Description { get; set; }
-        [BsonElement("status"), BsonRepresentation(BsonType.Int32)]
+        [BsonElement("status")]
+        [BsonRepresentation(BsonType.Int32)]
         public TaskStatus Status { get; set; } = TaskStatus.Backlog;
-        [BsonElement("priority"), BsonRepresentation(BsonType.Int32)]
+        [BsonElement("priority")]
+        [BsonRepresentation(BsonType.Int32)]
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;
-        [BsonElement("dueDate"), BsonDateTimeOptions(Kind = DateTimeKind.Utc), BsonIgnoreIfNull]
+        [BsonElement("dueDate")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        [BsonIgnoreIfNull]
         public DateTime? DueDate { get; set; }
         [BsonElement("labels")]
         public List<string> Labels { get; set; } = new();
-        [BsonElement("reporterIds"), BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("reporterIds")]
+        [BsonRepresentation(BsonType.ObjectId)]
         public List<string> ReporterIds { get; set; } = new();
-        [BsonElement("assigneeIds"), BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("assigneeIds")]
+        [BsonRepresentation(BsonType.ObjectId)]
         public List<string> AssigneeIds { get; set; } = new();
-        [BsonElement("createdAt"), BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        [BsonElement("updatedAt"), BsonDateTimeOptions(Kind = DateTimeKind.Utc), BsonIgnoreIfNull]
-        public DateTime? UpdatedAt { get; set; }
-        [BsonElement("deletedAt"), BsonDateTimeOptions(Kind = DateTimeKind.Utc), BsonIgnoreIfNull]
-        public DateTime? DeletedAt { get; set; }
     }
 
     public enum TaskStatus
