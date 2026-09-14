@@ -1,5 +1,6 @@
 using backend.Configurations;
 using backend.Interfaces;
+using backend.Middleware;
 using backend.Repositories;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -35,6 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapSwagger();
 

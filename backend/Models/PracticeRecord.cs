@@ -1,7 +1,12 @@
-﻿namespace backend.Models
+﻿using backend.Interfaces;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace backend.Models
 {
-    public class PracticeRecord<TId> : RecordBase<TId> where TId : notnull
+    public abstract class PracticeRecord : RecordBase, IPracticeRecord
     {
-        public int PracticeId { get; set; }
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string PracticeId { get; set; } = null!;
     }
 }

@@ -6,7 +6,7 @@ using backend.Interfaces;
 namespace backend.Models
 {
     [BsonIgnoreExtraElements]
-    public class Task : PracticeRecord<string>
+    public class Task : PracticeRecord
     {
         [BsonElement("projectId")]
         [BsonRepresentation(BsonType.ObjectId)]

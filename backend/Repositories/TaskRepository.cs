@@ -1,4 +1,5 @@
 ﻿using backend.Configurations;
+using backend.DTOs.Task;
 using backend.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -15,36 +16,29 @@ namespace backend.Repositories
             _taskCollection = database.GetCollection<TaskModel>(mongoDbSettings.Value.TasksCollectionName);
         }
 
-        public async Task CreateTaskAsync(TaskModel task)
+        public async Task CreateAsync(TaskModel dto, string author)
         {
-            await _taskCollection.InsertOneAsync(task);
+            await _taskCollection.InsertOneAsync(dto);
         }
 
-        public async Task DeleteTaskAsync(string taskId)
-        {
-            var filter = Builders<TaskModel>.Filter.And(
-                Builders<TaskModel>.Filter.Eq(t => t.TaskId, taskId),
-                Builders<TaskModel>.Filter.Eq(t => t.DeletedAt, null)
-            );
-            var update = Builders<TaskModel>.Update.Set(t => t.DeletedAt, DateTime.UtcNow);
-            var result = await _taskCollection.UpdateOneAsync(filter, update);
-            if (result.MatchedCount == 0) throw new Exception("Task not found or already deleted.");
-        }
-
-        public async Task<List<TaskModel>> GetAllTasksAsync()
+        public async Task DeleteAsync(string id, string author)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<TaskModel?> GetByIdAsync(string taskId)
+        public async Task<List<TaskModel>> GetAsync(TaskFilterDto? filter = null)
         {
             throw new NotImplementedException();
         }
 
-        public async Task UpdateTaskAsync(string taskId, TaskModel task)
+        public async Task<TaskModel?> GetByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
 
+        public async Task UpdateAsync(string id, TaskModel dto, string author)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

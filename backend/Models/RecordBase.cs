@@ -1,45 +1,42 @@
 ﻿using backend.Interfaces;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace backend.Models
 {
-    public abstract class RecordBase<TId> : IRecord<TId> where TId : notnull
+    public abstract class RecordBase : IRecord
     {
-        public TId Id { get; set; } = default!;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; } = null!;
         public long AutoNumber { get; set; }
         public string? Number { get; set; }
 
-        public OperationTypeDetail<TId> CreationInfo { get; set; } = default!;
-        public OperationTypeDetail<TId>? UpdationInfo { get; set; }
-        public OperationTypeDetail<TId>? DeletionInfo { get; set; }
+        public AuditInfo AuditInfo { get; set; } = null!;
     }
 
-    public class OperationTypeDetail<TId>
+    public class AuditInfo
     {
-        public TId Author { get; set; } = default!;
-        public DateTime TimeStamp { get; set; }
+        public OperationInfo Created { get; set; } = null!;
+        public OperationInfo? Updated { get; set; }
+        public OperationInfo? Deleted { get; set; }
     }
 
-    public enum OperationType
+    public class OperationInfo
     {
-        Unknown = 0,
-        Create = 1,
-        Update = 2,
-        Delete = 3,
-    }
+        public string Author { get; set; } = null!;
+        public DateTime Timestamp { get; set; }
+        public string? Description { get; set; }
 
-    public enum RecordType
-    {
-        Unknown = 0,
-        Task = 1,
-        Project = 2,
-        User = 3
-    }
+        private OperationInfo() { }
 
-    public enum UserRole
-    {
-        Unknown = 0,
-        Employee = 1,
-        Manager = 2,
-        Admin = 3
+        public static OperationInfo Create(string author, string? description = null)
+        {
+            return new OperationInfo
+            {
+                Author = author,
+                Timestamp = DateTime.UtcNow,
+                Description = description
+            };
+        }
     }
 }

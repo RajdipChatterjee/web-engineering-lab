@@ -1,13 +1,9 @@
-﻿using TaskModel = backend.Models.Task;
+﻿using backend.DTOs.Task;
+using TaskModel = backend.Models.Task;
 
 namespace backend.Interfaces
 {
-    public interface ITaskRepository
+    public interface ITaskRepository : IRepository<TaskFilterDto, TaskModel>
     {
-        Task<List<TaskModel>> GetAllTasksAsync();
-        Task<TaskModel?> GetByIdAsync(string taskId);
-        Task CreateTaskAsync(TaskModel task);
-        Task UpdateTaskAsync(string taskId, TaskModel task);
-        Task DeleteTaskAsync(string taskId);
     }
 }
