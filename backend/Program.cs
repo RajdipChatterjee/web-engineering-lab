@@ -39,7 +39,7 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.MapSwagger();
+//app.MapSwagger();
 
 app.UseAuthorization();
 
