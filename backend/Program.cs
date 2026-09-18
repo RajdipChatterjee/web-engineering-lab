@@ -2,8 +2,11 @@ using backend.Configurations;
 using backend.Interfaces;
 using backend.Middleware;
 using backend.Repositories;
+using backend.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +17,37 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpLogging(o => {});
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("fixed", context =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromSeconds(10)
+        }));
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new
+            {
+                status = 429,
+                message = "Too many requests. Please try again later."
+            },
+            cancellationToken
+         );
+    };
+});
 
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
@@ -40,6 +72,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpLogging();
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

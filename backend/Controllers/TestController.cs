@@ -1,16 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("fixed")]
     public class TestController : ControllerBase
     {
         private readonly ILogger<TestController> _logger;
+        private readonly IEmailService _emailService;
 
-        public TestController(ILogger<TestController> logger)
+        public TestController(ILogger<TestController> logger, IEmailService emailService)
         {
             _logger = logger;
+            _emailService = emailService;
         }
 
         [HttpGet("test-exception")]
@@ -44,8 +49,23 @@ namespace backend.Controllers
             //_logger.LogError("Error message");
             //_logger.LogCritical("Critical message");
 
-            throw new Exception("This is a test exception.");
+            //throw new Exception("This is a test exception.");
             return Ok("Take your data boy.");
+        }
+
+        [HttpPost("test-email")]
+        public async Task<IActionResult> TestEmail()
+        {
+            await _emailService.SendEmailAsync(
+                "rajdipchatterjee3000@gmail.com",
+                "Test Email",
+                "Hello from ASP.NET Core!"
+            );
+
+            return Ok(new
+            {
+                message = "Email sent successfully."
+            });
         }
     }
 }
