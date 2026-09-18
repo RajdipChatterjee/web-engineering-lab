@@ -43,6 +43,8 @@ builder.Services.AddRateLimiter(options =>
     };
 });
 
+builder.Services.AddHostedService<EmailBackgroundService>();
+
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
